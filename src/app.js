@@ -1,13 +1,13 @@
 import express from 'express';
 import { Server } from 'socket.io';
 import { __dirname } from './utils.js';
+import './dbConfig.js'
 import handlebars from 'express-handlebars'
 import productsRouter from './routes/products.router.js'
 import cartsRouter from './routes/carts.router.js'
 import messagesRouter from './routes/messages.router.js'
+import viewsRouter from './routes/views.router.js'
 import { messagesModel } from './dao/models/messages.model.js';
-import './dbConfig.js'
-
 
 
 const app = express()
@@ -24,6 +24,7 @@ app.use(express.static(__dirname + '/public'))
 app.use('/api/products', productsRouter)
 app.use('/api/carts', cartsRouter)
 app.use('/api/messages', messagesRouter)
+app.use('/api/views', viewsRouter)
 
 
 // Ruta raiz
@@ -39,28 +40,27 @@ app.set('view engine', 'handlebars')
 
 
 // sockets
-
 const mensajes = []
 
 const httpServer = app.listen(PORT, () => {
-    console.log(`Escuchando al puerto ${PORT}`)
+    console.log(`Escuchando al puerto ${PORT} => http://localhost:8080`)
 })
 
 const socketServer = new Server(httpServer)
 
-socketServer.on('connection',(socket) =>{
+socketServer.on('connection', (socket) => {
     console.log(`Usuario conectado: ${socket.id}`)
 
-    socket.on('disconnect',() =>{
+    socket.on('disconnect', () => {
         console.log('Usuario desconectado')
     })
 
-    socket.on('mensaje',info=>{
+    socket.on('mensaje', info => {
         mensajes.push(info)
-        socketServer.emit('chat',mensajes)
-        async function addMsg(){
+        socketServer.emit('chat', mensajes)
+        async function addMsg() {
             try {
-                const newMsg= await messagesModel.create(info)
+                const newMsg = await messagesModel.create(info)
                 return newMsg
             } catch (error) {
                 console.log(error)
@@ -70,8 +70,8 @@ socketServer.on('connection',(socket) =>{
         console.log(info)
     })
 
-    socket.on('nuevoUsuario',usuario =>{
-        socket.broadcast.emit('broadcast',usuario)
+    socket.on('nuevoUsuario', usuario => {
+        socket.broadcast.emit('broadcast', usuario)
     })
 })
 
@@ -81,21 +81,6 @@ socketServer.on('connection',(socket) =>{
 
 
 
-// socketServer.on('connection', (socket) => {
-//     console.log(`Usuario conectado`)
-
-//     socket.on('disconnect', () => {
-//         console.log(`Usuario desconectado`)
-//     })
-
-//     socket.emit('saludo','Bienvenido a tu primer websocket')
-
-//     socket.on('mensaje1',(obj)=>{
-//       mensajes.push(obj)
-//       console.log(mensajes)
-//       socketServer.emit('respuesta1',mensajes)
-//     })
-// })
 
 
 

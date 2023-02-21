@@ -18,4 +18,30 @@ export default class ProductsManager{
             console.log(error)
         }
     }
+
+    async getProductsById(idProd){
+        try {
+            if(idProd){
+                const foundProduct= await productsModel.findById(idProd)
+                return foundProduct
+            } else{
+                return 'Producto inexistente'
+            }
+        } catch (error) {
+            console.log(error.mesage)
+        }
+    }
+
+    async deleteProduct(idProd){
+        try {
+            if(idProd){
+                const deleteProduct= await productsModel.deleteOne(idProd)
+                return deleteProduct.id 
+            } else{
+                return 'Producto no encontrado'
+            }
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
 }
