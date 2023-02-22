@@ -8,11 +8,13 @@ const productsManager = new ProductsManager()
 const router = Router()
 
 router.get('/',async (req, res) => {
-    const products = await productsManager.getProducts()
-    if(!products){
-        res.json({message:'Error'})
+    const {limit=10,page=1,title}= req.query
+    const productsFilter = await productsModel.paginate({title},{limit,page})
+    
+    if(!productsFilter){
+        res.json({status:'Error'})
     } else {
-        res.json({message:'Success', products})
+        res.json({status:'Success', productsFilter})
     }
 })
 
@@ -30,29 +32,21 @@ router.get('/:pid',async(req,res)=>{
     }
 })
 
-// Pagination
-router.get('/pagination',async(req,res)=>{
-    const {limit=10,page=1,title} = req.query
-    const productInfo= await productsModel.paginate({title},{limit,page})
-
-    res.json({productInfo})
-}
-)
-
-// Agregation
+// Aggregation
 router.get('/aggregation',async(req,res)=>{
-    const products = await productsModel.aggregate([
-        {$match:{ category: 'Electro'}},
-        {$group: {
-            _id:'$category',
-            promedio:{$avg: '$price'},
-            cantidad: {$sum:'$price'},
-            },
-        },
-        {
-            $sort: { cantidad: 1}
-        },
-    ])
+    const products = await productsManager.getProducts()
+    // const products = await productsModel.aggregate([
+    //     {$match:{ category: 'Electro'}},
+    //     {$group: {
+    //         _id:'$category',
+    //         promedio:{$avg: '$price'},
+    //         cantidad: {$sum:'$price'},
+    //         },
+    //     },
+    //     {
+    //         $sort: { cantidad: 1}
+    //     },
+    // ])
     res.json({products})
 })
 

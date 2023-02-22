@@ -48,6 +48,17 @@ export default class CartManager {
         }
     }
 
+    async deleteProductToCart(cid, pid) {
+        try {
+            const cart = await cartModel.findById(cid)
+            const productIndex = cart.products.findIndex(product => product.product.toString() === pid)
+            cart = await cartModel.deleteOne(productIndex)
+            return cart            
+        } catch (error) {
+            console.log(error) 
+        }
+    }
+
     async getCartById(idCart) {
         try {
             const carts = await cartModel.find()

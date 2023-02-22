@@ -45,11 +45,25 @@ router.post('/addProducts',async(req,res)=>{
     res.json({message: 'producto agregado'})
 })
 
-router.put('/:cid/product/:_id', async(req,res)=>{
-    const { cid, _id} = req.params
+router.put('/:cid/products/:pid', async(req,res)=>{
+    const { cid, pid} = req.params
     const {quantity} = req.body
-    const cart = await cartManager.updateQuantity(cid,_id,quantity)
+    const cart = await cartManager.updateQuantity(cid,pid,quantity)
     res.json({message: 'Carrito actualizado con exito', carrito: cart})
+})
+
+router.delete('/:cid/products/:pid', async(req,res)=>{
+    const { cid, pid} = req.params
+    const cart = await cartManager.deleteProductToCart(cid,pid)
+    res.json({message: 'Producto eliminado correctamente', carrito: cart})
+})
+
+router.delete('/:cid', async(req,res)=>{
+    const { cid }= req.params
+    const cart = await cartModel.findById(cid)
+    cart.products = []
+    cart.save()
+    res.json({message: 'Productos eliminados',cart})
 })
 
 
