@@ -52,7 +52,8 @@ export default class CartManager {
         try {
             const cart = await cartModel.findById(cid)
             const productIndex = cart.products.findIndex(product => product.product.toString() === pid)
-            cart = await cartModel.deleteOne(productIndex)
+            cart.products = await cartModel.deleteOne(productIndex)
+            cart.save()
             return cart            
         } catch (error) {
             console.log(error) 

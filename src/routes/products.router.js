@@ -34,19 +34,18 @@ router.get('/:pid',async(req,res)=>{
 
 // Aggregation
 router.get('/aggregation',async(req,res)=>{
-    const products = await productsManager.getProducts()
-    // const products = await productsModel.aggregate([
-    //     {$match:{ category: 'Electro'}},
-    //     {$group: {
-    //         _id:'$category',
-    //         promedio:{$avg: '$price'},
-    //         cantidad: {$sum:'$price'},
-    //         },
-    //     },
-    //     {
-    //         $sort: { cantidad: 1}
-    //     },
-    // ])
+    const products = await productsModel.aggregate([
+        {$match:{ category: 'Electro'}},
+        {$group: {
+            _id:'$category',
+            promedio:{$avg: '$price'},
+            cantidad: {$sum:'$price'},
+            },
+        },
+        {
+            $sort: { cantidad: 1}
+        },
+    ])
     res.json({products})
 })
 
